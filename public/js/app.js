@@ -40,6 +40,7 @@ async function initLiff() {
 async function loadProducts() {
   try {
     const data = await API.getProducts();
+
     state.products = (data.products || []).map(p => ({
       id: String(p.id || ''),
       name: String(p.name || ''),
@@ -48,11 +49,11 @@ async function loadProducts() {
       image: String(p.image || placeholder),
       stock: Number(p.stock || 0),
       tags: String(p.tags || ''),
-      quick: String(p.quick).toUpperCase() === 'TRUE'
+      isFeatured: String(p.isFeatured || '').toUpperCase() === 'TRUE'
     })).filter(p => p.id && p.name);
 
     applyFilter();
-    renderQuickList();
+    renderFeaturedList();
     renderCategories();
   } catch (err) {
     console.error(err);
@@ -72,11 +73,14 @@ function applyFilter() {
   renderProducts();
 }
 
-function renderQuickList() {
-  const quick = state.products.filter(p => p.quick).slice(0, 10);
-  $('quickList').innerHTML = quick.length
-    ? quick.map(productCardSmall).join('')
-    : '<div class="empty">尚未設定快速補貨商品</div>';
+function renderFeaturedList() {
+  const featuredProducts = state.products
+    .filter(p => p.isFeatured)
+    .slice(0, 10);
+
+  $('quickList').innerHTML = featuredProducts.length
+    ? featuredProducts.map(productCardSmall).join('')
+    : '<div class="empty">近期熱門商品整理中</div>';
 }
 
 function renderCategories() {
