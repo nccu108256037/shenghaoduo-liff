@@ -23,6 +23,10 @@ function toast(message) {
   setTimeout(() => el.classList.add('hidden'), 1800);
 }
 
+function shuffleArray(array) {
+  return [...array].sort(() => Math.random() - 0.5);
+}
+
 async function initLiff() {
   const { LIFF_ID } = window.SHENG_HAO_DUO_CONFIG;
   if (!LIFF_ID || LIFF_ID.includes('請填入')) return;
@@ -64,12 +68,18 @@ async function loadProducts() {
 function applyFilter() {
   const kw = state.keyword.trim().toLowerCase();
 
-  state.filtered = state.products.filter(p => {
+  let results = state.products.filter(p => {
     const matchCategory = state.category === '全部' || p.category === state.category;
     const text = `${p.name} ${p.category} ${p.tags}`.toLowerCase();
     return matchCategory && (!kw || text.includes(kw));
   });
 
+  // 只有「全部商品」且沒有搜尋關鍵字時，才隨機排序
+  if (state.category === '全部' && !kw) {
+    results = shuffleArray(results);
+  }
+
+  state.filtered = results;
   renderProducts();
 }
 
