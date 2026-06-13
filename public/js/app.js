@@ -7,6 +7,8 @@ const state = {
   liffProfile: null
 };
 
+const selectedQty = {};
+
 const $ = (id) => document.getElementById(id);
 const money = (n) => `$${Number(n || 0).toLocaleString('zh-TW')}`;
 const placeholder = 'https://placehold.co/600x600/FFF3E8/EC7F32?text=%E7%9C%81%E5%A5%BD%E5%A4%9A';
@@ -74,7 +76,6 @@ function applyFilter() {
     return matchCategory && (!kw || text.includes(kw));
   });
 
-  // 只有「全部商品」且沒有搜尋關鍵字時，才隨機排序
   if (state.category === '全部' && !kw) {
     results = shuffleArray(results);
   }
@@ -109,6 +110,13 @@ function productCardSmall(p) {
       <img src="${p.image || placeholder}" alt="${p.name}" onerror="this.src='${placeholder}'" />
       <h3>${p.name}</h3>
       <div class="price">${money(p.price)}</div>
+
+      <div class="product-qty small-qty">
+        <button class="qty-select-btn" data-select-id="${p.id}" data-select-delta="-1">−</button>
+        <span id="quick-qty-${p.id}">${selectedQty[p.id] || 1}</span>
+        <button class="qty-select-btn" data-select-id="${p.id}" data-select-delta="1">＋</button>
+      </div>
+
       <button class="add-btn" data-add="${p.id}">加入</button>
     </article>
   `;
@@ -118,12 +126,23 @@ function productCard(p) {
   return `
     <article class="product-card">
       <img src="${p.image || placeholder}" alt="${p.name}" onerror="this.src='${placeholder}'" />
+
       <div class="product-meta">
         <h3>${p.name}</h3>
         <div class="muted">${p.category}</div>
       </div>
+
       <div class="price">${money(p.price)}</div>
-      <button class="add-btn" data-add="${p.id}">加入購物車</button>
+
+      <div class="product-qty">
+        <button class="qty-select-btn" data-select-id="${p.id}" data-select-delta="-1">−</button>
+        <span id="qty-${p.id}">${selectedQty[p.id] || 1}</span>
+        <button class="qty-select-btn" data-select-id="${p.id}" data-select-delta="1">＋</button>
+      </div>
+
+      <button class="add-btn" data-add="${p.id}">
+        🛒 加入購物車
+      </button>
     </article>
   `;
 }
@@ -135,10 +154,26 @@ function renderProducts() {
     : '<div class="empty">找不到商品，可以直接傳訊息給客服。</div>';
 }
 
+function changeSelectedQty(productId, delta) {
+  selectedQty[productId] = Math.max(
+    1,
+    (selectedQty[productId] || 1) + delta
+  );
+
+  const normalQty = document.getElementById(`qty-${productId}`);
+  const quickQty = document.getElementById(`quick-qty-${productId}`);
+
+  if (normalQty) normalQty.textContent = selectedQty[productId];
+  if (quickQty) quickQty.textContent = selectedQty[productId];
+}
+
 function addToCart(productId) {
-  state.cart[productId] = (state.cart[productId] || 0) + 1;
+  const qty = selectedQty[productId] || 1;
+
+  state.cart[productId] = (state.cart[productId] || 0) + qty;
+
   saveCart();
-  toast('已加入購物車');
+  toast(`已加入 ${qty} 件到購物車`);
 }
 
 function changeQty(productId, delta) {
@@ -319,6 +354,14 @@ function bindEvents() {
   document.body.addEventListener('click', e => {
     const addId = e.target.dataset.add;
     if (addId) addToCart(addId);
+
+    const selectId = e.target.dataset.selectId;
+    if (selectId) {
+      changeSelectedQty(
+        selectId,
+        Number(e.target.dataset.selectDelta)
+      );
+    }
 
     const category = e.target.dataset.category;
     if (category) {
