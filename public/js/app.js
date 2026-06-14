@@ -31,13 +31,26 @@ function shuffleArray(array) {
 
 async function initLiff() {
   const { LIFF_ID } = window.SHENG_HAO_DUO_CONFIG;
+
   if (!LIFF_ID || LIFF_ID.includes('請填入')) return;
 
   try {
     await liff.init({ liffId: LIFF_ID });
-    if (liff.isLoggedIn()) {
-      state.liffProfile = await liff.getProfile();
+
+    console.log('LIFF 初始化成功');
+    console.log('登入狀態:', liff.isLoggedIn());
+
+    if (!liff.isLoggedIn()) {
+      console.log('尚未登入 LINE，準備導向登入');
+      liff.login();
+      return;
     }
+
+    state.liffProfile = await liff.getProfile();
+
+    console.log('LINE 資料：');
+    console.log(state.liffProfile);
+
   } catch (err) {
     console.warn('LIFF 初始化失敗，仍可用瀏覽器測試', err);
   }
@@ -254,7 +267,8 @@ async function submitOrder(event) {
       },
       line: {
         userId: state.liffProfile?.userId || '',
-        displayName: state.liffProfile?.displayName || ''
+        displayName: state.liffProfile?.displayName || '',
+        pictureUrl: state.liffProfile?.pictureUrl || ''
       },
       items: items.map(({ id, name, price, qty, subtotal }) => ({
         id,
@@ -265,6 +279,9 @@ async function submitOrder(event) {
       })),
       total: items.reduce((sum, item) => sum + item.subtotal, 0)
     };
+
+    console.log('準備送出訂單 payload：');
+    console.log(payload);
 
     const result = await API.createOrder(payload);
 
