@@ -1,4 +1,4 @@
-const SHEET_ID = '請填入你的 Google Sheet ID';
+const SHEET_ID = '1enJWuvAuCFaFHJOZrmp_eaNEgIFljSzsZDw10d3BCnE';
 
 const PRODUCTS_SHEET = 'Products';
 const ORDERS_SHEET = 'Orders';
