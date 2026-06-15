@@ -38,21 +38,35 @@ async function initLiff() {
     await liff.init({ liffId: LIFF_ID });
 
     console.log('LIFF 初始化成功');
-    console.log('登入狀態:', liff.isLoggedIn());
+    console.log('是否在 LINE 內開啟:', liff.isInClient());
 
-    if (!liff.isLoggedIn()) {
-      console.log('尚未登入 LINE，準備導向登入');
-      liff.login();
-      return;
+    if (liff.isInClient()) {
+      const profile = await liff.getProfile();
+
+      state.liffProfile = {
+        userId: profile.userId || '',
+        displayName: profile.displayName || '',
+        pictureUrl: profile.pictureUrl || ''
+      };
+
+      console.log('LINE 使用者資料：');
+      console.log(state.liffProfile);
+    } else {
+      console.log('非 LINE 環境，不強制登入');
+      state.liffProfile = {
+        userId: '',
+        displayName: '',
+        pictureUrl: ''
+      };
     }
-
-    state.liffProfile = await liff.getProfile();
-
-    console.log('LINE 資料：');
-    console.log(state.liffProfile);
 
   } catch (err) {
     console.warn('LIFF 初始化失敗，仍可用瀏覽器測試', err);
+    state.liffProfile = {
+      userId: '',
+      displayName: '',
+      pictureUrl: ''
+    };
   }
 }
 
