@@ -1,12 +1,20 @@
 <!doctype html>
 <html lang="zh-Hant">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>省好多日用品送到家</title>
-  <link rel="stylesheet" href="/css/style.css" />
-  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-</head>
+<header class="hero">
+  <div>
+    <p class="eyebrow">LINE 補貨商城</p>
+    <h1>省好多日用品送到家</h1>
+    <p class="subtitle">日用品、清潔、廚房消耗品，手機點一點快速補貨。</p>
+
+    <div class="hero-badge">
+      🚚 台中市買滿 $200 免運送到府
+    </div>
+  </div>
+
+  <button id="cartBtn" class="cart-button" aria-label="購物車">
+    🛒 <span id="cartCount">0</span>
+  </button>
+</header>
 <body>
   <div id="app" class="app-shell">
     <header class="hero">
@@ -144,3 +152,16 @@
   <script src="/js/app.js"></script>
 </body>
 </html>
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 10px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: #fff3e8;
+  color: #ec7f32;
+  font-size: 14px;
+  font-weight: 700;
+  box-shadow: 0 6px 16px rgba(236, 127, 50, 0.12);
+}
