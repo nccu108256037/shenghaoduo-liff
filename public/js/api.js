@@ -43,11 +43,12 @@ const API = (() => {
 
     createOrder: (payload) => request('createOrder', payload),
 
-    verifyCoupon: (code, lineUserId) =>
-      request('verifyCoupon', {
-        code,
-        lineUserId
-      }),
+    verifyCoupon: (code, lineUserId, phone) =>
+  request('verifyCoupon', {
+    code,
+    lineUserId,
+    phone
+  }),
 
     getOrders: (payload) => request('getOrders', payload),
 
