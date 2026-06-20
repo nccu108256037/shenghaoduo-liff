@@ -39,11 +39,9 @@ const API = (() => {
   }
 
   return {
-    getProducts: () =>
-      request('products'),
+    getProducts: () => request('products'),
 
-    createOrder: (payload) =>
-      request('createOrder', payload),
+    createOrder: (payload) => request('createOrder', payload),
 
     verifyCoupon: (code, lineUserId) =>
       request('verifyCoupon', {
@@ -51,13 +49,10 @@ const API = (() => {
         lineUserId
       }),
 
-    getOrders: (payload) =>
-      request('getOrders', payload),
+    getOrders: (payload) => request('getOrders', payload),
 
-    updateOrderStatus: (payload) =>
-      request('updateOrderStatus', payload),
+    updateOrderStatus: (payload) => request('updateOrderStatus', payload),
 
-    adminLogin: (payload) =>
-      request('adminLogin', payload)
+    adminLogin: (payload) => request('adminLogin', payload)
   };
 })();
