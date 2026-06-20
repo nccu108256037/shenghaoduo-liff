@@ -434,13 +434,20 @@ function renderCheckout() {
 async function applyCoupon() {
   const input = $('couponInput');
   const message = $('couponMessage');
+  const phoneInput = $('customerPhone');
 
   if (!input || !message) return;
 
   const code = input.value.trim();
+  const phone = phoneInput ? phoneInput.value.trim() : '';
 
   if (!code) {
     message.textContent = '請輸入優惠券碼';
+    return;
+  }
+
+  if (!phone) {
+    message.textContent = '請先填寫電話，才能使用優惠券';
     return;
   }
 
@@ -449,27 +456,23 @@ async function applyCoupon() {
   try {
     const result = await API.verifyCoupon(
       code,
-      state.liffProfile?.userId || ''
+      state.liffProfile?.userId || '',
+      phone
     );
 
     if (!result.ok) {
       state.coupon = null;
       state.discountAmount = 0;
-
-      message.textContent =
-        result.message || '此優惠券無法使用';
-
+      message.textContent = result.message || '此優惠券無法使用';
       renderCheckout();
       return;
     }
 
     const subtotal = getCartSubtotal();
 
-    const discountAmount =
-      Math.round(
-        subtotal *
-        (1 - Number(result.discountRate || 1))
-      );
+    const discountAmount = Math.round(
+      subtotal * (1 - Number(result.discountRate || 1))
+    );
 
     state.coupon = result;
     state.discountAmount = discountAmount;
@@ -483,8 +486,7 @@ async function applyCoupon() {
     console.error(err);
     state.coupon = null;
     state.discountAmount = 0;
-    message.textContent =
-      err.message || '優惠券驗證失敗';
+    message.textContent = err.message || '優惠券驗證失敗';
     renderCheckout();
   }
 }
