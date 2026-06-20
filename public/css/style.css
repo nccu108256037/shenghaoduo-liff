@@ -682,3 +682,98 @@ main {
     height: 34px;
   }
 }
+
+/* =========================
+   優惠券系統
+========================= */
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 12px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: #fff3e8;
+  color: #ec7f32;
+  font-size: 14px;
+  font-weight: 800;
+  border: 1px solid #ffd9bd;
+  box-shadow: 0 6px 16px rgba(236,127,50,.12);
+}
+
+.coupon-card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  padding: 14px;
+  box-shadow: var(--shadow);
+}
+
+.coupon-toggle {
+  width: 100%;
+  padding: 14px;
+  border-radius: 14px;
+  background: var(--orange-soft);
+  color: var(--orange-dark);
+  font-weight: 900;
+  font-size: 15px;
+}
+
+.coupon-box {
+  margin-top: 14px;
+}
+
+.outline-btn {
+  width: 100%;
+  margin-top: 10px;
+  padding: 12px;
+  border-radius: 14px;
+  border: 2px solid var(--orange-dark);
+  background: white;
+  color: var(--orange-dark);
+  font-weight: 900;
+}
+
+.coupon-message {
+  margin-top: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--orange-dark);
+}
+
+.discount-row {
+  color: #e53935;
+}
+
+.discount-row strong {
+  color: #e53935 !important;
+}
+
+.final-row strong {
+  color: var(--orange-dark);
+  font-size: 24px;
+}
+
+/* 優惠券成功 */
+
+.coupon-success {
+  background: #e8fff0;
+  border: 1px solid #6fcf97;
+  color: #1b7a3f;
+  padding: 10px;
+  border-radius: 12px;
+  margin-top: 10px;
+  font-weight: 800;
+}
+
+/* 優惠券失敗 */
+
+.coupon-error {
+  background: #fff0f0;
+  border: 1px solid #eb5757;
+  color: #c62828;
+  padding: 10px;
+  border-radius: 12px;
+  margin-top: 10px;
+  font-weight: 800;
+}
