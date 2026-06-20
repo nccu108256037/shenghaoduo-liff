@@ -120,24 +120,66 @@
           ></textarea>
         </label>
 
-        <div class="coupon-card">
-          <button type="button" id="toggleCouponBtn" class="coupon-toggle">
-            🎟 使用優惠券（選填）
-          </button>
+        <div
+  class="coupon-card"
+  style="
+    display:block !important;
+    background:#fff;
+    border:3px solid red;
+    padding:16px;
+    margin:20px 0;
+    border-radius:12px;
+  "
+>
+  <button
+    type="button"
+    id="toggleCouponBtn"
+    class="coupon-toggle"
+    style="
+      display:block !important;
+      width:100%;
+      margin-bottom:12px;
+      font-size:18px;
+      font-weight:700;
+    "
+  >
+    🎟 使用優惠券（選填）
+  </button>
 
-          <div id="couponBox" class="coupon-box hidden">
-            <label>
-              優惠券 / 推薦碼
-              <input id="couponInput" placeholder="請輸入優惠碼，例如 HAO95" />
-            </label>
+  <div
+    id="couponBox"
+    class="coupon-box"
+    style="display:block !important;"
+  >
+    <label>
+      優惠券 / 推薦碼
+      <input
+        id="couponInput"
+        placeholder="請輸入優惠碼，例如 HAO95"
+        style="
+          width:100%;
+          padding:12px;
+          margin-top:8px;
+          margin-bottom:12px;
+        "
+      />
+    </label>
 
-            <button type="button" id="applyCouponBtn" class="outline-btn">
-              套用優惠券
-            </button>
+    <button
+      type="button"
+      id="applyCouponBtn"
+      class="outline-btn"
+      style="
+        width:100%;
+        padding:12px;
+      "
+    >
+      套用優惠券
+    </button>
 
-            <p id="couponMessage" class="coupon-message"></p>
-          </div>
-        </div>
+    <p id="couponMessage" class="coupon-message"></p>
+  </div>
+</div>
 
         <div class="order-summary">
           <h3>訂單明細</h3>
