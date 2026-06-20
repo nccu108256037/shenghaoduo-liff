@@ -5,7 +5,6 @@ const state = {
   keyword: '',
   cart: JSON.parse(localStorage.getItem('shd_cart') || '{}'),
   liffProfile: null,
-
   coupon: null,
   discountAmount: 0
 };
@@ -296,7 +295,101 @@ function renderCart() {
     money(items.reduce((sum, item) => sum + item.subtotal, 0));
 }
 
+function ensureCouponBlock() {
+  const form = $('checkoutForm');
+  const orderSummary = document.querySelector('.order-summary');
+
+  if (!form || !orderSummary) return;
+  if ($('couponInput')) return;
+
+  const couponHtml = document.createElement('div');
+  couponHtml.className = 'coupon-card';
+  couponHtml.style.cssText = `
+    display:block !important;
+    background:#fff;
+    border:1px solid #f1dfd1;
+    padding:14px;
+    margin:14px 0;
+    border-radius:22px;
+    box-shadow:0 10px 28px rgba(151,91,42,.12);
+  `;
+
+  couponHtml.innerHTML = `
+    <button
+      type="button"
+      id="toggleCouponBtn"
+      class="coupon-toggle"
+      style="
+        width:100%;
+        padding:14px;
+        border-radius:14px;
+        background:#fff3e8;
+        color:#ec7f32;
+        font-weight:900;
+        font-size:16px;
+      "
+    >
+      🎟 使用優惠券（選填）
+    </button>
+
+    <div
+      id="couponBox"
+      class="coupon-box hidden"
+      style="margin-top:14px;"
+    >
+      <label style="display:grid;gap:7px;font-weight:900;">
+        優惠券 / 推薦碼
+        <input
+          id="couponInput"
+          placeholder="請輸入優惠碼，例如 HAO95"
+          style="
+            width:100%;
+            border:1px solid #f1dfd1;
+            border-radius:16px;
+            background:white;
+            padding:13px 14px;
+            outline:0;
+          "
+        />
+      </label>
+
+      <button
+        type="button"
+        id="applyCouponBtn"
+        class="outline-btn"
+        style="
+          width:100%;
+          margin-top:10px;
+          padding:12px;
+          border-radius:14px;
+          border:2px solid #ec7f32;
+          background:white;
+          color:#ec7f32;
+          font-weight:900;
+        "
+      >
+        套用優惠券
+      </button>
+
+      <p
+        id="couponMessage"
+        class="coupon-message"
+        style="
+          margin-top:10px;
+          font-size:14px;
+          font-weight:800;
+          color:#ec7f32;
+        "
+      ></p>
+    </div>
+  `;
+
+  form.insertBefore(couponHtml, orderSummary);
+}
+
 function renderCheckout() {
+  ensureCouponBlock();
+
   const items = getCartItems();
 
   const subtotal =
@@ -341,6 +434,8 @@ function renderCheckout() {
 async function applyCoupon() {
   const input = $('couponInput');
   const message = $('couponMessage');
+
+  if (!input || !message) return;
 
   const code = input.value.trim();
 
@@ -521,17 +616,15 @@ function bindEvents() {
 
   $('checkoutForm').addEventListener('submit', submitOrder);
 
-  if ($('toggleCouponBtn')) {
-    $('toggleCouponBtn').addEventListener('click', () => {
-      $('couponBox').classList.toggle('hidden');
-    });
-  }
-
-  if ($('applyCouponBtn')) {
-    $('applyCouponBtn').addEventListener('click', applyCoupon);
-  }
-
   document.body.addEventListener('click', e => {
+    if (e.target.id === 'toggleCouponBtn') {
+      $('couponBox').classList.toggle('hidden');
+    }
+
+    if (e.target.id === 'applyCouponBtn') {
+      applyCoupon();
+    }
+
     const addId = e.target.dataset.add;
     if (addId) addToCart(addId);
 
