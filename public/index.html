@@ -58,7 +58,10 @@
         </div>
         <div id="cartItems" class="cart-items"></div>
         <div class="cart-footer">
-          <div class="total-row"><span>合計</span><strong id="cartTotal">$0</strong></div>
+          <div class="total-row">
+            <span>合計</span>
+            <strong id="cartTotal">$0</strong>
+          </div>
           <button id="checkoutBtn" class="primary-btn">前往結帳</button>
         </div>
       </div>
@@ -69,16 +72,67 @@
         <button id="backHomeBtn" class="icon-btn">←</button>
         <h2>填寫收件資料</h2>
       </div>
+
       <form id="checkoutForm" class="checkout-form">
-        <label>姓名<input id="customerName" required placeholder="請輸入姓名" /></label>
-        <label>電話<input id="customerPhone" required inputmode="tel" placeholder="09xxxxxxxx" /></label>
-        <label>地址<textarea id="customerAddress" required rows="3" placeholder="請輸入配送地址"></textarea></label>
+        <label>
+          姓名
+          <input id="customerName" required placeholder="請輸入姓名" />
+        </label>
+
+        <label>
+          電話
+          <input id="customerPhone" required inputmode="tel" placeholder="09xxxxxxxx" />
+        </label>
+
+        <label>
+          地址
+          <textarea id="customerAddress" required rows="3" placeholder="請輸入配送地址"></textarea>
+        </label>
+
+        <div class="coupon-card">
+          <button type="button" id="toggleCouponBtn" class="coupon-toggle">
+            🎟 使用優惠券（選填）
+          </button>
+
+          <div id="couponBox" class="coupon-box hidden">
+            <label>
+              優惠券 / 推薦碼
+              <input id="couponInput" placeholder="請輸入優惠碼，例如 HAO95" />
+            </label>
+
+            <button type="button" id="applyCouponBtn" class="outline-btn">
+              套用優惠券
+            </button>
+
+            <p id="couponMessage" class="coupon-message"></p>
+          </div>
+        </div>
+
         <div class="order-summary">
           <h3>訂單明細</h3>
           <div id="checkoutItems"></div>
-          <div class="total-row"><span>總金額</span><strong id="checkoutTotal">$0</strong></div>
+
+          <div id="checkoutTotalBox">
+            <div class="total-row">
+              <span>商品小計</span>
+              <strong id="checkoutSubtotal">$0</strong>
+            </div>
+
+            <div class="total-row discount-row hidden" id="checkoutDiscountRow">
+              <span>優惠折扣</span>
+              <strong id="checkoutDiscount">-$0</strong>
+            </div>
+
+            <div class="total-row final-row">
+              <span>應付金額</span>
+              <strong id="checkoutTotal">$0</strong>
+            </div>
+          </div>
         </div>
-        <button id="submitOrderBtn" class="primary-btn" type="submit">送出訂單</button>
+
+        <button id="submitOrderBtn" class="primary-btn" type="submit">
+          送出訂單
+        </button>
       </form>
     </div>
 
