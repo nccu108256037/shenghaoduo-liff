@@ -777,3 +777,55 @@ main {
   margin-top: 10px;
   font-weight: 800;
 }
+
+/* ===========================
+   Loading UI
+=========================== */
+
+.loading-box {
+  grid-column: 1/-1;
+
+  background: #ffffff;
+
+  border: 1px solid #f3dccb;
+
+  border-radius: 22px;
+
+  padding: 34px 22px;
+
+  text-align: center;
+
+  box-shadow: var(--shadow);
+}
+
+.loading-box .loading-title{
+  font-size:24px;
+
+  font-weight:900;
+
+  color:#2f241f;
+
+  margin-bottom:12px;
+}
+
+.loading-box .loading-desc{
+
+  font-size:17px;
+
+  color:#555;
+
+  font-weight:700;
+
+  line-height:1.8;
+}
+
+.loading-box .loading-tip{
+
+  margin-top:16px;
+
+  color:#ec7f32;
+
+  font-size:15px;
+
+  font-weight:900;
+}
