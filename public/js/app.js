@@ -85,34 +85,35 @@ async function initLiff() {
   }
 }
 
-function showLoadingUI(){
+function showLoadingUI() {
 
-    $('productTotal').textContent='商品載入中...';
+  $('productTotal').textContent = '商品載入中...';
 
-    $('productGrid').innerHTML=`
+  $('productGrid').innerHTML = `
+    <div class="loading-box">
+      <div class="loading-title">
+        🛒 商品整理中
+      </div>
 
-<div class="loading-box">
+      <div class="loading-desc">
+        正在整理今日最低價商品<br>
+        首次開啟約需數秒
+      </div>
 
-<div class="loading-title">
-🛒 商品整理中
-</div>
+      <div class="loading-tip">
+        請稍候一下，馬上就好 🚚
+      </div>
+    </div>
+  `;
 
-<div class="loading-desc">
-正在整理今日最低價商品
-<br>
-首次開啟約需數秒
-</div>
-
-<div class="loading-tip">
-請稍候一下，馬上就好 🚚
-</div>
-
-</div>
-
-`;
-
+  if ($('quickList')) {
+    $('quickList').innerHTML = `
+      <div class="skeleton-card"></div>
+      <div class="skeleton-card"></div>
+      <div class="skeleton-card"></div>
+    `;
+  }
 }
-
   if ($('quickList')) {
     $('quickList').innerHTML = `
       <div class="skeleton-card"></div>
