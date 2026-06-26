@@ -6,7 +6,11 @@ const state = {
   cart: JSON.parse(localStorage.getItem('shd_cart') || '{}'),
   liffProfile: null,
   coupon: null,
-  discountAmount: 0
+  discountAmount: 0,
+  renderIndex: 0,
+  pageSize: 20,
+  isRendering: false,
+  observer: null
 };
 
 const selectedQty = {};
@@ -38,11 +42,13 @@ function getCartSubtotal() {
 function resetCoupon() {
   state.coupon = null;
   state.discountAmount = 0;
-
   if ($('couponInput')) $('couponInput').value = '';
   if ($('couponMessage')) $('couponMessage').textContent = '';
-
   renderCheckout();
+}
+
+function safeImage(url) {
+  return url || placeholder;
 }
 
 async function initLiff() {
@@ -68,9 +74,9 @@ async function initLiff() {
         pictureUrl: ''
       };
     }
-
   } catch (err) {
     console.warn('LIFF 初始化失敗，仍可用瀏覽器測試', err);
+
     state.liffProfile = {
       userId: '',
       displayName: '',
@@ -79,7 +85,32 @@ async function initLiff() {
   }
 }
 
+function showLoadingUI() {
+  if ($('productTotal')) {
+    $('productTotal').textContent = '商品載入中...';
+  }
+
+  if ($('productGrid')) {
+    $('productGrid').innerHTML = `
+      <div class="loading-box">
+        🛒 省好多商品載入中...<br>
+        正在幫你整理最低價商品
+      </div>
+    `;
+  }
+
+  if ($('quickList')) {
+    $('quickList').innerHTML = `
+      <div class="skeleton-card"></div>
+      <div class="skeleton-card"></div>
+      <div class="skeleton-card"></div>
+    `;
+  }
+}
+
 async function loadProducts() {
+  showLoadingUI();
+
   try {
     const data = await API.getProducts();
 
@@ -99,8 +130,13 @@ async function loadProducts() {
     renderCategories();
   } catch (err) {
     console.error(err);
+
     $('productGrid').innerHTML =
       '<div class="empty">商品讀取失敗，請確認 Apps Script URL 與 Products 工作表。</div>';
+
+    if ($('productTotal')) {
+      $('productTotal').textContent = '';
+    }
   }
 }
 
@@ -123,7 +159,97 @@ function applyFilter() {
   }
 
   state.filtered = results;
-  renderProducts();
+  resetProductRender();
+}
+
+function resetProductRender() {
+  state.renderIndex = 0;
+
+  if ($('productTotal')) {
+    $('productTotal').textContent = `${state.filtered.length} 件`;
+  }
+
+  const grid = $('productGrid');
+
+  if (!state.filtered.length) {
+    grid.innerHTML = '<div class="empty">找不到商品，可以直接傳訊息給客服。</div>';
+    return;
+  }
+
+  grid.innerHTML = '';
+  renderNextProducts();
+  setupInfiniteScroll();
+}
+
+function renderNextProducts() {
+  if (state.isRendering) return;
+  if (state.renderIndex >= state.filtered.length) return;
+
+  state.isRendering = true;
+
+  const grid = $('productGrid');
+  const fragment = document.createDocumentFragment();
+
+  const start = state.renderIndex;
+  const end = Math.min(start + state.pageSize, state.filtered.length);
+  const items = state.filtered.slice(start, end);
+
+  items.forEach(p => {
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = productCard(p).trim();
+    fragment.appendChild(wrapper.firstElementChild);
+  });
+
+  grid.appendChild(fragment);
+  state.renderIndex = end;
+  state.isRendering = false;
+
+  addLoadMoreTrigger();
+}
+
+function addLoadMoreTrigger() {
+  const grid = $('productGrid');
+  const oldTrigger = $('loadMoreTrigger');
+
+  if (oldTrigger) oldTrigger.remove();
+
+  if (state.renderIndex >= state.filtered.length) return;
+
+  const trigger = document.createElement('div');
+  trigger.id = 'loadMoreTrigger';
+  trigger.className = 'load-more-trigger';
+  trigger.textContent = '繼續往下滑看更多商品';
+  grid.appendChild(trigger);
+
+  if (state.observer) {
+    state.observer.observe(trigger);
+  }
+}
+
+function setupInfiniteScroll() {
+  if (state.observer) {
+    state.observer.disconnect();
+  }
+
+  state.observer = new IntersectionObserver(entries => {
+    const entry = entries[0];
+
+    if (entry.isIntersecting) {
+      const trigger = $('loadMoreTrigger');
+      if (trigger) trigger.remove();
+
+      requestAnimationFrame(() => {
+        renderNextProducts();
+      });
+    }
+  }, {
+    root: null,
+    rootMargin: '500px',
+    threshold: 0
+  });
+
+  const trigger = $('loadMoreTrigger');
+  if (trigger) state.observer.observe(trigger);
 }
 
 function renderFeaturedList() {
@@ -152,7 +278,13 @@ function renderCategories() {
 function productCardSmall(p) {
   return `
     <article class="quick-card">
-      <img src="${p.image || placeholder}" alt="${p.name}" onerror="this.src='${placeholder}'" />
+      <img 
+        src="${safeImage(p.image)}" 
+        alt="${p.name}" 
+        loading="lazy"
+        decoding="async"
+        onerror="this.src='${placeholder}'" 
+      />
       <h3>${p.name}</h3>
       <div class="price">${money(p.price)}</div>
 
@@ -170,7 +302,13 @@ function productCardSmall(p) {
 function productCard(p) {
   return `
     <article class="product-card">
-      <img src="${p.image || placeholder}" alt="${p.name}" onerror="this.src='${placeholder}'" />
+      <img 
+        src="${safeImage(p.image)}" 
+        alt="${p.name}" 
+        loading="lazy"
+        decoding="async"
+        onerror="this.src='${placeholder}'" 
+      />
 
       <div class="product-meta">
         <h3>${p.name}</h3>
@@ -190,14 +328,6 @@ function productCard(p) {
       </button>
     </article>
   `;
-}
-
-function renderProducts() {
-  $('productTotal').textContent = `${state.filtered.length} 件`;
-
-  $('productGrid').innerHTML = state.filtered.length
-    ? state.filtered.map(productCard).join('')
-    : '<div class="empty">找不到商品，可以直接傳訊息給客服。</div>';
 }
 
 function changeSelectedQty(productId, delta) {
@@ -277,7 +407,13 @@ function renderCart() {
   $('cartItems').innerHTML = items.length
     ? items.map(item => `
       <div class="cart-item">
-        <img src="${item.image || placeholder}" alt="${item.name}" onerror="this.src='${placeholder}'" />
+        <img 
+          src="${safeImage(item.image)}" 
+          alt="${item.name}" 
+          loading="lazy"
+          decoding="async"
+          onerror="this.src='${placeholder}'" 
+        />
         <div>
           <strong>${item.name}</strong>
           <div class="muted">${money(item.price)} / 小計 ${money(item.subtotal)}</div>
@@ -304,83 +440,23 @@ function ensureCouponBlock() {
 
   const couponHtml = document.createElement('div');
   couponHtml.className = 'coupon-card';
-  couponHtml.style.cssText = `
-    display:block !important;
-    background:#fff;
-    border:1px solid #f1dfd1;
-    padding:14px;
-    margin:14px 0;
-    border-radius:22px;
-    box-shadow:0 10px 28px rgba(151,91,42,.12);
-  `;
 
   couponHtml.innerHTML = `
-    <button
-      type="button"
-      id="toggleCouponBtn"
-      class="coupon-toggle"
-      style="
-        width:100%;
-        padding:14px;
-        border-radius:14px;
-        background:#fff3e8;
-        color:#ec7f32;
-        font-weight:900;
-        font-size:16px;
-      "
-    >
+    <button type="button" id="toggleCouponBtn" class="coupon-toggle">
       🎟 使用優惠券（選填）
     </button>
 
-    <div
-      id="couponBox"
-      class="coupon-box hidden"
-      style="margin-top:14px;"
-    >
-      <label style="display:grid;gap:7px;font-weight:900;">
+    <div id="couponBox" class="coupon-box hidden">
+      <label>
         優惠券 / 推薦碼
-        <input
-          id="couponInput"
-          placeholder="請輸入優惠碼，例如 HAO95"
-          style="
-            width:100%;
-            border:1px solid #f1dfd1;
-            border-radius:16px;
-            background:white;
-            padding:13px 14px;
-            outline:0;
-          "
-        />
+        <input id="couponInput" placeholder="請輸入優惠碼，例如 HAO95" />
       </label>
 
-      <button
-        type="button"
-        id="applyCouponBtn"
-        class="outline-btn"
-        style="
-          width:100%;
-          margin-top:10px;
-          padding:12px;
-          border-radius:14px;
-          border:2px solid #ec7f32;
-          background:white;
-          color:#ec7f32;
-          font-weight:900;
-        "
-      >
+      <button type="button" id="applyCouponBtn" class="outline-btn">
         套用優惠券
       </button>
 
-      <p
-        id="couponMessage"
-        class="coupon-message"
-        style="
-          margin-top:10px;
-          font-size:14px;
-          font-weight:800;
-          color:#ec7f32;
-        "
-      ></p>
+      <p id="couponMessage" class="coupon-message"></p>
     </div>
   `;
 
@@ -591,13 +667,24 @@ async function submitOrder(event) {
   }
 }
 
+let searchTimer = null;
+
 function bindEvents() {
   $('searchInput').addEventListener('input', e => {
-    state.keyword = e.target.value;
-    applyFilter();
+    clearTimeout(searchTimer);
+
+    searchTimer = setTimeout(() => {
+      state.keyword = e.target.value;
+      applyFilter();
+    }, 250);
   });
 
-  $('reloadBtn').addEventListener('click', loadProducts);
+  $('reloadBtn').addEventListener('click', () => {
+    state.category = '全部';
+    state.keyword = '';
+    $('searchInput').value = '';
+    loadProducts();
+  });
 
   $('cartBtn').addEventListener('click', () => {
     renderCart();
@@ -660,6 +747,7 @@ function bindEvents() {
 (async function boot() {
   bindEvents();
   renderCartBadge();
-  await initLiff();
-  await loadProducts();
+
+  loadProducts();
+  initLiff();
 })();
