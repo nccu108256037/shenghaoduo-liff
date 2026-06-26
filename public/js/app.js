@@ -96,8 +96,8 @@ function showLoadingUI() {
   if ($('productGrid')) {
     $('productGrid').innerHTML = `
       <div class="loading-box">
-        <div class="loading-title">🛒 商品整理中</div>
-        <div class="loading-desc">正在整理今日最低價商品<br>首次開啟約需數秒</div>
+        <div class="loading-title">🛒 網頁讀取中，馬上來</div>
+        <div class="loading-desc">正在整理今日最低價商品<br>首次開啟約需一兩秒</div>
         <div class="loading-tip">請稍候一下，馬上就好 🚚</div>
       </div>
     `;
