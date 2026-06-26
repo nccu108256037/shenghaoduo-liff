@@ -777,55 +777,60 @@ main {
   margin-top: 10px;
   font-weight: 800;
 }
-
 /* ===========================
-   Loading UI
+   省好多 2.0 載入與速度優化 UI
 =========================== */
-
 .loading-box {
-  grid-column: 1/-1;
-
+  grid-column: 1 / -1;
   background: #ffffff;
-
   border: 1px solid #f3dccb;
-
   border-radius: 22px;
-
-  padding: 34px 22px;
-
+  padding: 30px 22px;
   text-align: center;
-
   box-shadow: var(--shadow);
 }
 
-.loading-box .loading-title{
-  font-size:24px;
-
-  font-weight:900;
-
-  color:#2f241f;
-
-  margin-bottom:12px;
+.loading-title {
+  font-size: 22px;
+  font-weight: 950;
+  color: var(--text);
+  margin-bottom: 10px;
 }
 
-.loading-box .loading-desc{
-
-  font-size:17px;
-
-  color:#555;
-
-  font-weight:700;
-
-  line-height:1.8;
+.loading-desc {
+  font-size: 17px;
+  color: #4b4039;
+  font-weight: 800;
+  line-height: 1.75;
 }
 
-.loading-box .loading-tip{
+.loading-tip {
+  margin-top: 14px;
+  color: var(--orange-dark);
+  font-size: 15px;
+  font-weight: 950;
+}
 
-  margin-top:16px;
+.skeleton-card {
+  flex: 0 0 116px;
+  width: 116px;
+  height: 170px;
+  border-radius: 18px;
+  background: linear-gradient(90deg, #f2f2f2 25%, #fafafa 50%, #f2f2f2 75%);
+  background-size: 200% 100%;
+  animation: skeletonMove 1.2s infinite;
+}
 
-  color:#ec7f32;
+@keyframes skeletonMove {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
 
-  font-size:15px;
-
-  font-weight:900;
+.load-more-trigger {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 800;
+  padding: 20px 0 28px;
 }
