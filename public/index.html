@@ -7,7 +7,6 @@
 
   <link rel="preconnect" href="https://static.line-scdn.net" />
   <link rel="dns-prefetch" href="https://static.line-scdn.net" />
-
   <link rel="stylesheet" href="/css/style.css" />
 
   <script defer src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
@@ -15,17 +14,12 @@
 
 <body>
   <div id="app" class="app-shell">
-
     <header class="hero">
       <div>
         <p class="eyebrow">LINE 補貨商城</p>
         <h1>省好多日用品送到家</h1>
-        <p class="subtitle">
-          日用品、清潔、廚房消耗品，手機點一點快速補貨。
-        </p>
-        <div class="hero-badge">
-          🚚 台中市買滿 200 元免運送到府
-        </div>
+        <p class="subtitle">日用品、清潔、廚房消耗品，手機點一點快速補貨。</p>
+        <div class="hero-badge">🚚 台中市買滿 200 元免運送到府</div>
       </div>
 
       <button id="cartBtn" class="cart-button" aria-label="購物車">
@@ -35,11 +29,7 @@
 
     <main>
       <section class="search-card">
-        <input
-          id="searchInput"
-          type="search"
-          placeholder="搜尋：手套、保鮮膜、濾網、衛生紙..."
-        />
+        <input id="searchInput" type="search" placeholder="搜尋：手套、保鮮膜、濾網、衛生紙..." autocomplete="off" />
       </section>
 
       <section class="section-block">
@@ -47,7 +37,6 @@
           <h2>🔥 近日熱門商品</h2>
           <button id="reloadBtn" class="text-btn">查看全部</button>
         </div>
-
         <div id="quickList" class="horizontal-list skeleton-row">
           <div class="skeleton-card"></div>
           <div class="skeleton-card"></div>
@@ -59,7 +48,6 @@
         <div class="section-title">
           <h2>商品分類</h2>
         </div>
-
         <div id="categoryList" class="category-list">
           <button class="category-chip active">載入中...</button>
         </div>
@@ -70,11 +58,11 @@
           <h2>全部商品</h2>
           <span id="productTotal" class="muted">商品載入中...</span>
         </div>
-
         <div id="productGrid" class="product-grid">
           <div class="loading-box">
-            🛒 省好多商品載入中...<br />
-            正在幫你整理最低價商品
+            <div class="loading-title">🛒 商品整理中</div>
+            <div class="loading-desc">正在整理今日最低價商品<br>首次開啟約需數秒</div>
+            <div class="loading-tip">請稍候一下，馬上就好 🚚</div>
           </div>
         </div>
       </section>
@@ -82,24 +70,18 @@
 
     <div id="cartDrawer" class="drawer hidden">
       <div class="drawer-mask" data-close="cart"></div>
-
       <div class="drawer-panel">
         <div class="drawer-head">
           <h2>購物車</h2>
           <button class="icon-btn" data-close="cart">✕</button>
         </div>
-
         <div id="cartItems" class="cart-items"></div>
-
         <div class="cart-footer">
           <div class="total-row">
             <span>合計</span>
             <strong id="cartTotal">$0</strong>
           </div>
-
-          <button id="checkoutBtn" class="primary-btn">
-            前往結帳
-          </button>
+          <button id="checkoutBtn" class="primary-btn">前往結帳</button>
         </div>
       </div>
     </div>
@@ -111,36 +93,15 @@
       </div>
 
       <form id="checkoutForm" class="checkout-form">
-        <label>
-          姓名
-          <input id="customerName" required placeholder="請輸入姓名" />
-        </label>
-
-        <label>
-          電話
-          <input id="customerPhone" required inputmode="tel" placeholder="09xxxxxxxx" />
-        </label>
-
-        <label>
-          地址
-          <textarea id="customerAddress" required rows="3" placeholder="請輸入配送地址"></textarea>
-        </label>
+        <label>姓名<input id="customerName" required placeholder="請輸入姓名" /></label>
+        <label>電話<input id="customerPhone" required inputmode="tel" placeholder="09xxxxxxxx" /></label>
+        <label>地址<textarea id="customerAddress" required rows="3" placeholder="請輸入配送地址"></textarea></label>
 
         <div class="coupon-card">
-          <button type="button" id="toggleCouponBtn" class="coupon-toggle">
-            🎟 使用優惠券（選填）
-          </button>
-
+          <button type="button" id="toggleCouponBtn" class="coupon-toggle">🎟 使用優惠券（選填）</button>
           <div id="couponBox" class="coupon-box hidden">
-            <label>
-              優惠券 / 推薦碼
-              <input id="couponInput" placeholder="請輸入優惠碼，例如 HAO95" />
-            </label>
-
-            <button type="button" id="applyCouponBtn" class="outline-btn">
-              套用優惠券
-            </button>
-
+            <label>優惠券 / 推薦碼<input id="couponInput" placeholder="請輸入優惠碼，例如 HAO95" /></label>
+            <button type="button" id="applyCouponBtn" class="outline-btn">套用優惠券</button>
             <p id="couponMessage" class="coupon-message"></p>
           </div>
         </div>
@@ -148,28 +109,14 @@
         <div class="order-summary">
           <h3>訂單明細</h3>
           <div id="checkoutItems"></div>
-
           <div id="checkoutTotalBox">
-            <div class="total-row">
-              <span>商品小計</span>
-              <strong id="checkoutSubtotal">$0</strong>
-            </div>
-
-            <div class="total-row discount-row hidden" id="checkoutDiscountRow">
-              <span>優惠折扣</span>
-              <strong id="checkoutDiscount">-$0</strong>
-            </div>
-
-            <div class="total-row final-row">
-              <span>應付金額</span>
-              <strong id="checkoutTotal">$0</strong>
-            </div>
+            <div class="total-row"><span>商品小計</span><strong id="checkoutSubtotal">$0</strong></div>
+            <div class="total-row discount-row hidden" id="checkoutDiscountRow"><span>優惠折扣</span><strong id="checkoutDiscount">-$0</strong></div>
+            <div class="total-row final-row"><span>應付金額</span><strong id="checkoutTotal">$0</strong></div>
           </div>
         </div>
 
-        <button id="submitOrderBtn" class="primary-btn" type="submit">
-          送出訂單
-        </button>
+        <button id="submitOrderBtn" class="primary-btn" type="submit">送出訂單</button>
       </form>
     </div>
 
