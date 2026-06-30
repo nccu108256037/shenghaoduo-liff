@@ -1,13 +1,58 @@
 const API = (() => {
   const config = window.SHENG_HAO_DUO_CONFIG;
 
-  function timeoutFetch(url, options = {}, timeout = 15000) {
-    return Promise.race([
-      fetch(url, options),
-      new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('讀取逾時，請重新整理一次')), timeout)
-      )
-    ]);
+  function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  async function timeoutFetch(url, options = {}, timeout = 18000) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeout);
+
+    try {
+      const res = await fetch(url, {
+        ...options,
+        signal: controller.signal
+      });
+
+      clearTimeout(timer);
+      return res;
+    } catch (err) {
+      clearTimeout(timer);
+      throw err;
+    }
+  }
+
+  async function fetchJsonWithRetry(url, options = {}, retry = 2) {
+    let lastError = null;
+
+    for (let i = 0; i <= retry; i++) {
+      try {
+        const res = await timeoutFetch(url, options);
+
+        const text = await res.text();
+
+        if (!res.ok) {
+          throw new Error(`伺服器回應錯誤：${res.status}`);
+        }
+
+        try {
+          return JSON.parse(text);
+        } catch (err) {
+          throw new Error('伺服器回傳格式錯誤，請重新整理');
+        }
+
+      } catch (err) {
+        lastError = err;
+
+        if (i < retry) {
+          await sleep(700 + i * 800);
+          continue;
+        }
+      }
+    }
+
+    throw lastError || new Error('讀取失敗');
   }
 
   async function request(action, payload = {}) {
@@ -18,19 +63,13 @@ const API = (() => {
     }
 
     if (action === 'products') {
-      const res = await timeoutFetch(`${url}?action=products`, {
+      return fetchJsonWithRetry(`${url}?action=products`, {
         method: 'GET',
         cache: 'default'
-      });
-
-      if (!res.ok) {
-        throw new Error('讀取商品失敗');
-      }
-
-      return res.json();
+      }, 2);
     }
 
-    const res = await timeoutFetch(url, {
+    return fetchJsonWithRetry(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'text/plain;charset=utf-8'
@@ -39,13 +78,7 @@ const API = (() => {
         action,
         ...payload
       })
-    });
-
-    if (!res.ok) {
-      throw new Error('送出失敗');
-    }
-
-    return res.json();
+    }, 1);
   }
 
   return {
