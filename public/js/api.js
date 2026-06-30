@@ -18,31 +18,56 @@ const API = (() => {
     }
 
     if (action === 'products') {
-      const res = await timeoutFetch(`${url}?action=products&t=${Date.now()}`, {
+      const res = await timeoutFetch(`${url}?action=products`, {
         method: 'GET',
-        cache: 'no-store'
+        cache: 'default'
       });
 
-      if (!res.ok) throw new Error('讀取商品失敗');
+      if (!res.ok) {
+        throw new Error('讀取商品失敗');
+      }
+
       return res.json();
     }
 
     const res = await timeoutFetch(url, {
       method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ action, ...payload })
+      headers: {
+        'Content-Type': 'text/plain;charset=utf-8'
+      },
+      body: JSON.stringify({
+        action,
+        ...payload
+      })
     });
 
-    if (!res.ok) throw new Error('送出失敗');
+    if (!res.ok) {
+      throw new Error('送出失敗');
+    }
+
     return res.json();
   }
 
   return {
     getProducts: () => request('products'),
-    createOrder: (payload) => request('createOrder', payload),
-    verifyCoupon: (code, lineUserId, phone) => request('verifyCoupon', { code, lineUserId, phone }),
-    getOrders: (payload) => request('getOrders', payload),
-    updateOrderStatus: (payload) => request('updateOrderStatus', payload),
-    adminLogin: (payload) => request('adminLogin', payload)
+
+    createOrder: (payload) =>
+      request('createOrder', payload),
+
+    verifyCoupon: (code, lineUserId, phone) =>
+      request('verifyCoupon', {
+        code,
+        lineUserId,
+        phone
+      }),
+
+    getOrders: (payload) =>
+      request('getOrders', payload),
+
+    updateOrderStatus: (payload) =>
+      request('updateOrderStatus', payload),
+
+    adminLogin: (payload) =>
+      request('adminLogin', payload)
   };
 })();
