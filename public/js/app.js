@@ -271,18 +271,48 @@ function productCard(p) {
   `;
 }
 
+let visibleProductCount = 30;
+
 function renderProducts() {
   if ($('productTotal')) {
     $('productTotal').textContent = `${state.filtered.length} 件`;
   }
 
-  if (!$('productGrid')) return;
+  const grid = $('productGrid');
+  if (!grid) return;
 
-  $('productGrid').innerHTML = state.filtered.length
-    ? state.filtered.map(productCard).join('')
-    : '<div class="empty">找不到商品，可以直接傳訊息給客服。</div>';
+  if (!state.filtered.length) {
+    grid.innerHTML = '<div class="empty">找不到商品，可以直接傳訊息給客服。</div>';
+    return;
+  }
+
+  const productsToShow = state.filtered.slice(0, visibleProductCount);
+
+  grid.innerHTML = `
+    ${productsToShow.map(productCard).join('')}
+
+    ${
+      visibleProductCount < state.filtered.length
+        ? `
+          <div class="load-more-box">
+            <button id="loadMoreProductsBtn" class="primary-btn">
+              顯示更多商品（${Math.min(visibleProductCount + 30, state.filtered.length)} / ${state.filtered.length}）
+            </button>
+          </div>
+        `
+        : ''
+    }
+  `;
+
+  const btn = $('loadMoreProductsBtn');
+
+  if (btn) {
+    btn.addEventListener('click', () => {
+      visibleProductCount += 30;
+      renderProducts();
+    });
+  }
 }
-
 function changeSelectedQty(productId, delta) {
   selectedQty[productId] = Math.max(
     1,
