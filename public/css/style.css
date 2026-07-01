@@ -834,3 +834,8 @@ main {
   font-weight: 800;
   padding: 20px 0 28px;
 }
+
+.load-more-box {
+  grid-column: 1 / -1;
+  padding: 18px 0 28px;
+}
