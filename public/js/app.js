@@ -184,7 +184,8 @@ function applyFilter() {
   }
 
   state.filtered = results;
-  renderProducts();
+visibleProductCount = 30;
+renderProducts();
 }
 
 function renderFeaturedList() {
